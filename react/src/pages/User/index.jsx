@@ -241,7 +241,7 @@ export const index = () => {
                             description="Are you sure, you want to delete this user?"
                             onConfirm={ev => confirmDelete(users)}
                         >
-                            <Button type="text"  className="text-danger"><DeleteOutlined /></Button>
+                            <Button type="text" className="text-danger"><DeleteOutlined /></Button>
                         </Popconfirm>
                     )}
                 </>
@@ -351,6 +351,8 @@ export const index = () => {
                     position: ['topRight', 'bottomRight'],
                     pageSizeOptions: [10, 20, 50, 100, 500]
                 }} />
+
+            <FloatButton.BackTop />
         </>
 
     )

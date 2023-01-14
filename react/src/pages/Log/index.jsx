@@ -8,7 +8,9 @@ import { Excel } from 'antd-table-saveas-excel';
 import dayjs from 'dayjs';
 import 'dayjs/locale/vi';
 import locale from 'antd/locale/vi_VN';
-import { useStateContext } from '../../context/ContextProvider';
+import JSONPretty from 'react-json-pretty';
+import JSONPrettyMon from 'react-json-pretty/dist/1337';
+
 export const index = () => {
     const [logs, setLogs] = useState([]);
     const [models, setModels] = useState([]);
@@ -58,7 +60,7 @@ export const index = () => {
         let uri = `/logs`;
 
         uri += fSortId ? `?sort=${fSortId}` : `?sort=-id`;
-        uri += fSlug ? `&filter[slug]=${fName}` : ``;
+        uri += fSlug ? `&filter[slug]=${fSlug}` : ``;
         uri += fModel ? `&filter[model]=${fModel}` : ``;
         uri += fUsername ? `&filter[username]=${fUsername}` : ``;
         uri += fDateStart ? `&filter[date_start]=${fDateStart}` : ``;
@@ -197,6 +199,31 @@ export const index = () => {
             ),
     });
 
+    const renderTag = (slug) => {
+        switch (slug) {
+            case 'login':
+                return (<Tag color="purple">LOGIN</Tag>)
+                break;
+            case 'create':
+                return (<Tag color="green">CREATE</Tag>)
+                break;
+            case 'update':
+                return (<Tag color="orange">UPDATE</Tag>)
+                break;
+            case 'delete':
+                return (<Tag color="volcano">DELETE</Tag>)
+                break;
+            case 'destroy':
+                return (<Tag color="red">DESTROY</Tag>)
+                break;
+            case 'confirm':
+                return (<Tag color="cyan">CONFIRM</Tag>)
+                break;
+            default:
+                break;
+        }
+    }
+
     const openModal = (logs) => {
         setShowLog({ ...logs })
         setModalOpen(true)
@@ -219,7 +246,10 @@ export const index = () => {
             key: 'slug',
             width: '10%',
             ...getColumnSearchProps('slug'),
-            fixed: 'left'
+            fixed: 'left',
+            render: (text) => (
+                <>{renderTag(text)}</>
+            )
         },
         {
             title: 'Model',
@@ -466,11 +496,11 @@ export const index = () => {
                 okButtonProps={{ style: { display: 'none' } }}
                 cancelButtonProps={{ style: { display: 'none' } }}
             >
-                <p><Tag color="default">{showLog.slug}</Tag></p>
+                <p>{renderTag(showLog.slug)}</p>
                 <p>Model: <u>{showLog.model}</u></p>
                 <p>ID User: {showLog.user_id}</p>
                 <p>Username: {showLog.username}</p>
-                <p>Detail: {showLog.detail}</p>
+                <p>Detail:</p><JSONPretty data={showLog.detail} theme={JSONPrettyMon} />
             </Modal>
         </>
 

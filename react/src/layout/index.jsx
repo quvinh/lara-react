@@ -15,8 +15,7 @@ import { Outlet, Link, Navigate, useLocation } from 'react-router-dom';
 import { useStateContext } from '../context/ContextProvider';
 import axiosClient from '../../../react/src/axios-client';
 import { message } from 'antd'
-
-
+import { Breadcrumbs } from '../components/Breadcrumbs'
 
 export const index = () => {
     const { user, token, setUser, setToken } = useStateContext();
@@ -47,8 +46,8 @@ export const index = () => {
     }
 
     const usePathname = () => {
-        const location = useLocation()
-        return location.pathname;
+        const location = useLocation();
+        return location.pathname == '/' ? 'dashboard' : (location.pathname).replace('/', '');
     }
 
     const onLogout = () => {
@@ -87,12 +86,12 @@ export const index = () => {
                     className="vh-100"
                     theme="dark"
                     mode="inline"
-                    defaultSelectedKeys={[usePathname().replace('/', '')]}
+                    selectedKeys={[usePathname()]}
                     items={[
                         {
                             key: 'dashboard',
                             icon: <DashboardOutlined />,
-                            label: <Link to={'/home'}>Dashboard</Link>,
+                            label: <Link to={'/dashboard'}>Dashboard</Link>,
                         },
                         {
                             key: 'users',
@@ -147,7 +146,7 @@ export const index = () => {
                         background: 'rgb(255, 255, 255)',
                     }}
                 >
-
+                    <Breadcrumbs />
                     <Outlet />
 
                 </Content>

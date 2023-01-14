@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
+use App\Models\Log;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
 
@@ -20,7 +23,7 @@ class UserController extends Controller
         Route::get('/users', [UserController::class, 'index']);
         Route::post('/users', [UserController::class, 'store']);
         Route::get('/users/{id}', [UserController::class, 'show']);
-        Route::put('/users/{id}', [UserController::class, 'update']);
+        Route::post('/users/{id}', [UserController::class, 'update']);
         Route::delete('/users/{id}', [UserController::class, 'destroy']);
     }
 
@@ -103,10 +106,7 @@ class UserController extends Controller
             'username' => 'required|string|max:50|unique:users,username,' . $id,
             'name' => 'required|string|max:50',
             'email' => 'required|email|unique:users,email,' . $id,
-            'password' => [
-                'confirmed',
-                Password::min(8)->symbols()
-            ]
+            'password' => 'confirmed|min:8'
         ]);
         if($validator->fails()) {
             return response()->json($validator->errors(), 422);
@@ -117,13 +117,26 @@ class UserController extends Controller
         if($request->password) {
             $user_password = bcrypt($request->password);
         }
+        $avatar = $user->avatar;
+        if ($request->hasFile('avatar')) {
+            $avatar = $request->file('avatar')->store('public/avatars');
+            $avatar = str_replace('public/', '', $avatar);
+        }
         $user->update([
             'username' => $request->username,
             'name' => $request->name,
             'password' => $user_password,
             'email' => $request->email,
             'address' => $request->address,
-            'mobile' => $request->mobile
+            'mobile' => $request->mobile,
+            'avatar' => $avatar
+        ]);
+        Log::create([
+            'slug' => 'update',
+            'model' => (new User)->getTable(),
+            'user_id' => Auth::user()->id,
+            'username' => Auth::user()->username,
+            'detail' => json_encode(array('id' => $user->id, 'username' => $user->username))
         ]);
         return new UserResource($user);
     }

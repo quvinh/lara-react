@@ -8,7 +8,8 @@ import {
     ReconciliationOutlined,
     BellOutlined,
     LogoutOutlined,
-    HistoryOutlined
+    HistoryOutlined,
+    GroupOutlined
 } from '@ant-design/icons';
 import { Layout, Menu, theme, Dropdown, Space, FloatButton, Breadcrumb } from 'antd';
 import { Outlet, Link, Navigate, useLocation } from 'react-router-dom';
@@ -76,6 +77,27 @@ export const index = () => {
         }
     }
 
+    const getItem = (label, key, icon, children, type) => {
+        return {
+            key,
+            icon,
+            children,
+            label,
+            type,
+        };
+    }
+
+    const rootSubmenuKeys = ['company'];
+    const [openKeys, setOpenKeys] = useState(['company']);
+    const onOpenChange = (keys) => {
+        const latestOpenKey = keys.find((key) => openKeys.indexOf(key) === -1);
+        if (rootSubmenuKeys.indexOf(latestOpenKey) === -1) {
+            setOpenKeys(keys);
+        } else {
+            setOpenKeys(latestOpenKey ? [latestOpenKey] : []);
+        }
+    };
+
     return (
         <Layout>
             <Sider trigger={null} collapsible collapsed={collapsed}>
@@ -86,23 +108,17 @@ export const index = () => {
                     className="vh-100"
                     theme="dark"
                     mode="inline"
+                    openKeys={openKeys ? openKeys : usePathname()}
+                    onOpenChange={onOpenChange}
                     selectedKeys={[usePathname()]}
                     items={[
-                        {
-                            key: 'dashboard',
-                            icon: <DashboardOutlined />,
-                            label: <Link to={'/dashboard'}>Dashboard</Link>,
-                        },
-                        {
-                            key: 'users',
-                            icon: <UserOutlined />,
-                            label: <Link to={'/users'}>Users</Link>,
-                        },
-                        {
-                            key: 'logs',
-                            icon: <HistoryOutlined />,
-                            label: <Link to={'/logs'}>Logs</Link>,
-                        }
+                        getItem(<Link to={'/dashboard'}>Dashboard</Link>, 'dashboard', <DashboardOutlined />),
+                        getItem(<Link to={'/users'}>Users</Link>, 'users', <UserOutlined />),
+                        getItem(<Link to={'/logs'}>Logs</Link>, 'logs', <HistoryOutlined />),
+                        getItem('Company', 'company', <GroupOutlined />, [
+                            getItem(<Link to={'/companies'}>Companies</Link>, 'companies'),
+                            getItem(<Link to={'/import-excel'}>Import Excel</Link>, 'import-excel'),
+                        ]),
                     ]}
                 />
             </Sider>

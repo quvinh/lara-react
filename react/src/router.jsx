@@ -9,6 +9,8 @@ import { UserForm } from './pages/User/UserForm'
 import { index as NotFound } from './pages/NotFound'
 import { index as Login } from './pages/Login'
 import { index as LogPage } from './pages/Log'
+import { index as CompanyPage } from './pages/Company'
+import { ImportExcel } from './pages/Company/ImportExcel'
 
 const router = createBrowserRouter([
     {
@@ -21,12 +23,14 @@ const router = createBrowserRouter([
             { path: 'users/new', element: <UserForm /> },
             { path: 'users/:id', element: <UserForm /> },
             { path: 'logs', element: <LogPage /> },
+            { path: 'companies', element: <CompanyPage /> },
+            { path: 'import-excel', element: <ImportExcel /> },
         ]
     },
     {
         path: '',
         element: <GuestLayout />,
-        children: [ { path: 'login', element: <Login /> }
+        children: [{ path: 'login', element: <Login /> }
         ]
     },
     {

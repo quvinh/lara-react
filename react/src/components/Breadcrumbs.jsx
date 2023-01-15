@@ -10,7 +10,7 @@ export const Breadcrumbs = () => {
         const pathnames = pathname.replace('/dashboard', '/').split("/").filter((item) => item);
         const capatilize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
         return (
-            <div className="d-flex justify-content-between align-items-center">
+            <div className="d-flex justify-content-between align-items-center mb-2">
                 {/* <h1 className="text-muted">{pathnames.slice(-1) == '' ? 'Dashboard' : capatilize(pathnames.slice(-1).toString())}</h1> */}
                 <Breadcrumb>
                     {pathnames.length > 0 ? (

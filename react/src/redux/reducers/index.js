@@ -1,10 +1,11 @@
 import { combineReducers } from "redux";
 
 import counter from "./counter";
+import excel from "./excel";
 
 const allReducers = combineReducers({
     counter,
-    // add more reducers here
+    excel
 });
 
 export default allReducers;

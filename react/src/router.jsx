@@ -10,7 +10,7 @@ import { index as NotFound } from './pages/NotFound'
 import { index as Login } from './pages/Login'
 import { index as LogPage } from './pages/Log'
 import { index as CompanyPage } from './pages/Company'
-import { ImportExcel } from './pages/Company/ImportExcel'
+import { index as ImportExcel } from './pages/Company/ImportExcel'
 
 const router = createBrowserRouter([
     {

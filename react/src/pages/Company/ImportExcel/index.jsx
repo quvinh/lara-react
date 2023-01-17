@@ -2,12 +2,14 @@ import { Button, message, Steps, theme } from 'antd';
 import { useState } from 'react';
 import { ImportInventory } from './ImportInventory';
 import { ExportInvoice } from './ExportInvoice';
+import { CheckCircleOutlined, DoubleLeftOutlined, DoubleRightOutlined } from '@ant-design/icons';
 
 export const index = () => {
     const { token } = theme.useToken();
     const [current, setCurrent] = useState(0);
 
     const [inventory, setInventory] = useState([]);
+    const [exportInvoice, setExportInvoice] = useState([]);
     // console.log(new Set(inventory.map(item => item.masanpham)))
     const steps = [
         {
@@ -16,7 +18,7 @@ export const index = () => {
         },
         {
             title: 'Dữ liệu bán hàng',
-            content: <ExportInvoice inventory={inventory} />,
+            content: <ExportInvoice inventory={inventory} exportInvoice={exportInvoice} setExportInvoice={setExportInvoice} />,
         },
         {
             title: 'Kết quả',
@@ -41,37 +43,37 @@ export const index = () => {
         // backgroundColor: token.colorFillAlter,
         // borderRadius: token.borderRadiusLG,
         // border: `1px dashed ${token.colorBorder}`,
-        marginTop: 16,
+        // marginTop: 16,
     };
     return (
         <>
             <Steps current={current} items={items} />
-            <div style={contentStyle}>{steps[current].content}</div>
-            <div className='d-flex justify-content-end align-items-center mt-2'>
+            <div className='d-flex justify-content-center align-items-center mt-3'>
                 {current > 0 && (
                     <div className='me-1'>
                         <Button
                             onClick={() => prev()}
                         >
-                            Previous
+                            Previous <DoubleLeftOutlined />
                         </Button>
                     </div>
                 )}
                 {current < steps.length - 1 && (
                     <div>
                         <Button type="primary" onClick={() => next()}>
-                            Next
+                            Next <DoubleRightOutlined />
                         </Button>
                     </div>
                 )}
                 {current === steps.length - 1 && (
                     <div>
                         <Button type="primary" onClick={() => message.success('Processing complete!')}>
-                            Done
+                            Done <CheckCircleOutlined />
                         </Button>
                     </div>
                 )}
             </div>
+            <div style={contentStyle}>{steps[current].content}</div>
         </>
     );
 }

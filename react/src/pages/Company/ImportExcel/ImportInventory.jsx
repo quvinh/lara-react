@@ -15,6 +15,15 @@ export const ImportInventory = (props) => {
     const [loading, setLoading] = useState(false);
     const searchInput = useRef(null);
 
+    const handleSearch = (selectedKeys, confirm, dataIndex) => {
+        confirm();
+        setSearchText(selectedKeys[0]);
+        setSearchedColumn(dataIndex);
+    };
+    const handleReset = (clearFilters) => {
+        clearFilters();
+        setSearchText('');
+    };
     const getColumnSearchProps = (dataIndex) => ({
         filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
             <div
@@ -125,11 +134,14 @@ export const ImportInventory = (props) => {
             dataIndex: 'masanpham',
             key: 'masanpham',
             ...getColumnSearchProps('masanpham'),
+            sorter: (a, b) => a.masanpham.length - b.masanpham.length,
+            sortDirections: ['descend', 'ascend'],
             fixed: 'left',
         },
         {
             title: 'Tên hàng hóa',
             dataIndex: 'tenhanghoa',
+            ...getColumnSearchProps('tenhanghoa'),
             key: 'tenhanghoa'
         },
         {
@@ -144,6 +156,7 @@ export const ImportInventory = (props) => {
                 {
                     title: 'Số lượng',
                     dataIndex: 'slg_dauky',
+                    width: 75,
                     key: 'slg_dauky'
                 },
                 {
@@ -159,6 +172,7 @@ export const ImportInventory = (props) => {
                 {
                     title: 'Số lượng',
                     dataIndex: 'slg_nhaptrongky',
+                    width: 75,
                     key: 'slg_nhaptrongky'
                 },
                 {
@@ -174,6 +188,7 @@ export const ImportInventory = (props) => {
                 {
                     title: 'Số lượng',
                     dataIndex: 'slg_xuattrongky',
+                    width: 75,
                     key: 'slg_xuattrongky'
                 },
                 {
@@ -190,6 +205,7 @@ export const ImportInventory = (props) => {
                     title: 'Số lượng',
                     dataIndex: 'slg_cuoiky',
                     key: 'slg_cuoiky',
+                    width: 75,
                     fixed: 'right'
                 },
                 {
@@ -197,6 +213,14 @@ export const ImportInventory = (props) => {
                     dataIndex: 'thtien_cuoiky',
                     key: 'thtien_cuoiky',
                     fixed: 'right'
+                },
+                {
+                    title: 'Đơn giá TB',
+                    key: 'avg',
+                    fixed: 'right',
+                    render: (_, record) => (
+                        <span className="text-primary">{record.slg_cuoiky == 0 ? 0 : (record.thtien_cuoiky/record.slg_cuoiky).toFixed(1)}</span>
+                    )
                 },
             ]
         },
@@ -256,8 +280,8 @@ export const ImportInventory = (props) => {
 
     return (
         <div>
-            <div className="text-center">
-                <h2 className="text-muted">Tồn đầu kỳ</h2>
+            <div className="text-center mb-2 mt-2 fz-18">
+                <b className="text-muted">TỒN ĐẦU KỲ</b>
             </div>
             <Input type='file' name='fileUpload' onChange={onChangeFile} className='mb-2' />
             <Table

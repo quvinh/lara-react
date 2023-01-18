@@ -12,7 +12,7 @@ import {
     GroupOutlined
 } from '@ant-design/icons';
 import { Layout, Menu, theme, Dropdown, Space, FloatButton, Breadcrumb } from 'antd';
-import { Outlet, Link, Navigate, useLocation } from 'react-router-dom';
+import { Outlet, Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useStateContext } from '../context/ContextProvider';
 import axiosClient from '../../../react/src/axios-client';
 import { message } from 'antd'
@@ -20,8 +20,12 @@ import { Breadcrumbs } from '../components/Breadcrumbs'
 
 export const index = () => {
     const { user, token, setUser, setToken } = useStateContext();
+    if (!token) {
+        return <Navigate to={"/login"} />
+    }
     const [collapsed, setCollapsed] = useState(false);
     const { Header, Sider, Content, Footer } = Layout;
+    const navigate = useNavigate();
 
     const items = [
         {
@@ -41,11 +45,6 @@ export const index = () => {
         },
     ];
 
-
-    if (!token) {
-        return <Navigate to={"/login"} />
-    }
-
     const usePathname = () => {
         const location = useLocation();
         return location.pathname == '/' ? 'dashboard' : (location.pathname).replace('/', '');
@@ -57,7 +56,9 @@ export const index = () => {
                 setUser({});
                 setToken(null);
                 message.info('Successful logout');
+                navigate('/login');
             })
+            .catch((err) => console.log(err))
     }
 
     const userClick = ({ key }) => {

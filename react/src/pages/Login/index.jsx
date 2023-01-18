@@ -21,7 +21,7 @@ export const index = () => {
             newLoadings[index] = false;
             return newLoadings;
           });
-        }, 1000);
+        }, 9000);
       };
 
     const onFinish = (values) => {

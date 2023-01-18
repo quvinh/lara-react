@@ -6,6 +6,7 @@ import { useRef, useState } from 'react';
 import { ExcelRenderer } from 'react-excel-renderer';
 import Highlighter from 'react-highlight-words';
 import stringSimilarity from 'string-similarity';
+import { Excel } from 'antd-table-saveas-excel';
 
 const EditableCell = ({
     editing,
@@ -517,7 +518,7 @@ export const ExportInvoice = (props) => {
         },
         {
             title: '#',
-            dataIndex: 'action',
+            key: 'action',
             fixed: 'right',
             width: 70,
             render: (_, record) => {
@@ -660,6 +661,18 @@ export const ExportInvoice = (props) => {
         props.setExportInvoice(newData);
     }
 
+    const exportExcel = (sheet, columns, data, file) => {
+        const excel = new Excel();
+        excel.addSheet(sheet)
+            .addColumns(columns)
+            .addDataSource(data)
+            .saveAs(`${file}.xlsx`);
+    }
+
+    const handleButtonClick = (ev) => {
+        exportExcel('Data', cols.filter(item => !['filter', 'no', 'action'].includes(item.key)), data, 'DATA');
+    };
+
     return (
         <div>
             <div className="text-center mb-2 mt-2 fz-18">
@@ -670,7 +683,7 @@ export const ExportInvoice = (props) => {
                 <div>
                     <Button style={{backgroundColor: '#fa541c', color: 'white'}} className="me-1" onClick={merge}>Merge</Button>
                     {/* <Button className="me-1">Restore</Button> */}
-                    <Button style={{ color: 'white' }} className="bg-success">Excel</Button>
+                    <Button style={{ color: 'white' }} className="bg-success" onClick={handleButtonClick}>Excel</Button>
                 </div>
             </div>
             <Form form={form} component={false}>

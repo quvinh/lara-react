@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Spatie\Permission\Models\Role;
 
 class AuthController extends Controller
 {
@@ -30,14 +31,22 @@ class AuthController extends Controller
             return response()->json($validator->errors(), 422);
         }
         $credentials = $request->only(['username', 'password']);
-        if (! Auth::attempt($credentials)) {
+        if (!Auth::attempt($credentials)) {
             return response([
                 'message' => 'Provided email adderss or password incorrect'
             ], 422);
         }
         /** @var User $user */
         $user = Auth::user();
+        $user->getRoleNames();
         $token = $user->createToken('main')->plainTextToken;
+
+        if(count($user->roles) > 0) {
+            $role = Role::findById($user->roles[0]['id']);
+            $permissions = $role->getAllPermissions();
+        } else {
+            $permissions = [];
+        }
 
         Log::create([
             'slug' => 'login',
@@ -46,7 +55,7 @@ class AuthController extends Controller
             'username' => $user->username
         ]);
 
-        return response(compact('user', 'token'));
+        return response(compact('user', 'token', 'permissions'));
     }
 
     public function logout(Request $request)

@@ -20,9 +20,12 @@ class UserController extends Controller
 {
     public static function Routes()
     {
-        Route::get('/users', [UserController::class, 'index']);
+        Route::group(['middleware' => ['can:acc.view']], function () {
+            Route::get('/users', [UserController::class, 'index']);
+            Route::get('/users/{id}', [UserController::class, 'show']);
+        });
+
         Route::post('/users', [UserController::class, 'store']);
-        Route::get('/users/{id}', [UserController::class, 'show']);
         Route::post('/users/{id}', [UserController::class, 'update']);
         Route::delete('/users/{id}', [UserController::class, 'destroy']);
     }
@@ -34,7 +37,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        return UserResource::collection(User::orderByDesc('id')->get());
+        return UserResource::collection(User::with('roles')->orderByDesc('id')->get());
     }
 
     /**
@@ -76,6 +79,14 @@ class UserController extends Controller
             'email' => $request->email,
             'address' => $request->address,
             'mobile' => $request->mobile
+        ]);
+
+        Log::create([
+            'slug' => 'create',
+            'model' => (new User)->getTable(),
+            'user_id' => Auth::user()->id,
+            'username' => Auth::user()->username,
+            'detail' => json_encode(array('id' => $user->id, 'username' => $user->username))
         ]);
 
         return response(new UserResource($user), 201);
@@ -149,7 +160,15 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        User::find($id)->delete();
+        $user = User::find($id);
+        Log::create([
+            'slug' => 'destroy',
+            'model' => (new User)->getTable(),
+            'user_id' => Auth::user()->id,
+            'username' => Auth::user()->username,
+            'detail' => json_encode(array('id' => $user->id, 'username' => $user->username))
+        ]);
+        $user->delete();
         return response("", 204);
     }
 }

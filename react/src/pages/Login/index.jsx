@@ -7,7 +7,7 @@ import { message as messageAnt } from 'antd'
 export const index = () => {
     const [loadings, setLoadings] = useState([]);
     const [errors, setErrors] = useState(null);
-    const { setUser, setToken } = useStateContext();
+    const { setUser, setToken, setRole, setPermissions } = useStateContext();
 
     const enterLoading = (index) => {
         setLoadings((prevLoadings) => {
@@ -21,7 +21,7 @@ export const index = () => {
             newLoadings[index] = false;
             return newLoadings;
           });
-        }, 9000);
+        }, 1000);
       };
 
     const onFinish = (values) => {
@@ -34,6 +34,8 @@ export const index = () => {
             .then(({ data }) => {
                 setUser(data.user);
                 setToken(data.token);
+                setRole(data.user.roles.name);
+                setPermissions(data.permissions.map(item => item.name))
                 messageAnt.info('Logged in successfully');
             })
             .catch(err => {

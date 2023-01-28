@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { SearchOutlined, EditOutlined, DeleteOutlined, FileExcelOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Input, Space, Table, Popconfirm, message, Pagination, Dropdown, Form, Select, DatePicker, ConfigProvider, FloatButton } from 'antd';
+import { Button, Input, Space, Table, Popconfirm, message, Pagination, Dropdown, Form, Select, DatePicker, ConfigProvider, FloatButton, Tag } from 'antd';
 import Highlighter from 'react-highlight-words';
 import axiosClient from '../../axios-client';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Excel } from 'antd-table-saveas-excel';
 import dayjs from 'dayjs';
 import 'dayjs/locale/vi';
@@ -20,6 +20,7 @@ export const index = () => {
     const searchInput = useRef(null);
 
     const [pageTotal, setPageTotal] = useState(0);
+    const navigate = useNavigate();
 
     // export excel
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -48,7 +49,9 @@ export const index = () => {
             })
             .catch(err => {
                 setLoading(false);
-                console.log('Error 500');
+                if(err.response.status == 403) {
+                    navigate('/not-authorized');
+                }
             })
     }
 
@@ -200,6 +203,16 @@ export const index = () => {
             dataIndex: 'email',
             key: 'email',
             ...getColumnSearchProps('email'),
+        },
+        {
+            title: 'Role',
+            dataIndex: 'role',
+            key: 'role',
+            render: (role) => (
+                <>
+                    {role[0] ? <Tag color="purple">{role[0].name}</Tag> : <Tag>No role</Tag>}
+                </>
+            )
         },
         {
             title: 'Mobile',

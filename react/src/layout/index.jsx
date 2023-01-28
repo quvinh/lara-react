@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     DashboardOutlined,
     MenuFoldOutlined,
@@ -19,10 +19,13 @@ import { message } from 'antd'
 import { Breadcrumbs } from '../components/Breadcrumbs'
 
 export const index = () => {
-    const { user, token, setUser, setToken } = useStateContext();
+    const { user, token, permissions, setUser, setToken, setRole, setPermissions } = useStateContext();
     if (!token) {
         return <Navigate to={"/login"} />
     }
+    const [menuItems, setMenuItems] = useState([
+        getItem(<Link to={'/dashboard'}>Dashboard</Link>, 'dashboard', <DashboardOutlined />)
+    ]);
     const [collapsed, setCollapsed] = useState(false);
     const { Header, Sider, Content, Footer } = Layout;
     const navigate = useNavigate();
@@ -55,6 +58,8 @@ export const index = () => {
             .then(() => {
                 setUser({});
                 setToken(null);
+                setRole(null);
+                setPermissions([]);
                 message.info('Successful logout');
                 navigate('/login');
             })
@@ -98,6 +103,19 @@ export const index = () => {
             setOpenKeys(latestOpenKey ? [latestOpenKey] : []);
         }
     };
+    console.log(permissions)
+    // const menuItemss = [
+    //     getItem(<Link to={'/dashboard'}>Dashboard</Link>, 'dashboard', <DashboardOutlined />),
+    //     getItem(<Link to={'/users'}>Users</Link>, 'users', <UserOutlined />),
+    //     getItem(<Link to={'/logs'}>Logs</Link>, 'logs', <HistoryOutlined />),
+    //     getItem('Company', 'company', <GroupOutlined />, [
+    //         getItem(<Link to={'/companies'}>Companies</Link>, 'companies'),
+    //         getItem(<Link to={'/import-excel'}>Import Excel</Link>, 'import-excel'),
+    //     ]),
+    // ]
+    // useEffect(() => {
+    //     setMenuItems()
+    // }, [])
 
     return (
         <Layout>
@@ -112,15 +130,7 @@ export const index = () => {
                     openKeys={openKeys ? openKeys : usePathname()}
                     onOpenChange={onOpenChange}
                     selectedKeys={[usePathname()]}
-                    items={[
-                        getItem(<Link to={'/dashboard'}>Dashboard</Link>, 'dashboard', <DashboardOutlined />),
-                        getItem(<Link to={'/users'}>Users</Link>, 'users', <UserOutlined />),
-                        getItem(<Link to={'/logs'}>Logs</Link>, 'logs', <HistoryOutlined />),
-                        getItem('Company', 'company', <GroupOutlined />, [
-                            getItem(<Link to={'/companies'}>Companies</Link>, 'companies'),
-                            getItem(<Link to={'/import-excel'}>Import Excel</Link>, 'import-excel'),
-                        ]),
-                    ]}
+                    items={menuItems}
                 />
             </Sider>
             <Layout className="site-layout">

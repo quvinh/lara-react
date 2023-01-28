@@ -11,6 +11,7 @@ import { index as Login } from './pages/Login'
 import { index as LogPage } from './pages/Log'
 import { index as CompanyPage } from './pages/Company'
 import { index as ImportExcel } from './pages/Company/ImportExcel'
+import { index as NotAuthorized } from './pages/NotAuthorized'
 
 const router = createBrowserRouter([
     {
@@ -25,6 +26,7 @@ const router = createBrowserRouter([
             { path: 'logs', element: <LogPage /> },
             { path: 'companies', element: <CompanyPage /> },
             { path: 'import-excel', element: <ImportExcel /> },
+            { path: 'not-authorized', element: <NotAuthorized /> },
         ]
     },
     {

@@ -55,7 +55,13 @@ class DatabaseSeeder extends Seeder
             ['name' => 'log.delete', 'guard_name' => 'web'],
             ['name' => 'log.view', 'guard_name' => 'web'],
 
-            /* Add here */
+            // Role
+            ['name' => 'rol.add', 'guard_name' => 'web'],
+            ['name' => 'rol.edit', 'guard_name' => 'web'],
+            ['name' => 'rol.delete', 'guard_name' => 'web'],
+            ['name' => 'rol.view', 'guard_name' => 'web'],
+            ['name' => 'rol.confirm', 'guard_name' => 'web'],
+
             // Company
             ['name' => 'com.add', 'guard_name' => 'web'],
             ['name' => 'com.edit', 'guard_name' => 'web'],

@@ -25,9 +25,9 @@ class UserController extends Controller
             Route::get('/users/{id}', [UserController::class, 'show']);
         });
 
-        Route::post('/users', [UserController::class, 'store']);
-        Route::post('/users/{id}', [UserController::class, 'update']);
-        Route::delete('/users/{id}', [UserController::class, 'destroy']);
+        Route::post('/users', [UserController::class, 'store'])->middleware('can:acc.add');
+        Route::post('/users/{id}', [UserController::class, 'update'])->middleware('can:acc.edit');
+        Route::delete('/users/{id}', [UserController::class, 'destroy'])->middleware('can:acc.delete');
     }
 
     /**

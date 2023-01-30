@@ -3,7 +3,7 @@ import { SearchOutlined, EyeOutlined, DeleteOutlined, FileExcelOutlined, PlusOut
 import { Button, Input, Space, Table, Popconfirm, message, Pagination, Dropdown, Form, Select, DatePicker, ConfigProvider, FloatButton, Modal, Tag } from 'antd';
 import Highlighter from 'react-highlight-words';
 import axiosClient from '../../axios-client';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Excel } from 'antd-table-saveas-excel';
 import dayjs from 'dayjs';
 import 'dayjs/locale/vi';
@@ -39,6 +39,8 @@ export const index = () => {
     const [fUsername, setFUsername] = useState(null);
     const [fDateStart, setFDateStart] = useState(dayjs().format('YYYY-MM-DD'));
     const [fDateEnd, setFDateEnd] = useState(dayjs().add(1, 'day').format('YYYY-MM-DD'));
+
+    const navigate = useNavigate();
 
     // export excel
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -83,7 +85,9 @@ export const index = () => {
             })
             .catch(err => {
                 setLoading(false);
-                console.log('Error 500');
+                if(err.response.status == 403) {
+                    navigate('/not-authorized');
+                }
             })
     }
 

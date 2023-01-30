@@ -16,9 +16,11 @@ class LogController extends Controller
 {
     public static function Routes()
     {
-        Route::get('/logs', [LogController::class, 'index']);
-        Route::get('/logs/{id}', [LogController::class, 'show']);
-        Route::delete('/logs/{id}', [LogController::class, 'destroy']);
+        Route::group(['middleware' => ['can:log.view']], function () {
+            Route::get('/logs', [LogController::class, 'index']);
+            Route::get('/logs/{id}', [LogController::class, 'show']);
+        });
+        Route::delete('/logs/{id}', [LogController::class, 'destroy'])->middleware('can:log.delete');
     }
 
     /**

@@ -9,7 +9,8 @@ import {
     BellOutlined,
     LogoutOutlined,
     HistoryOutlined,
-    GroupOutlined
+    GroupOutlined,
+    SettingOutlined
 } from '@ant-design/icons';
 import { Layout, Menu, theme, Dropdown, Space, FloatButton, Breadcrumb } from 'antd';
 import { Outlet, Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
@@ -17,15 +18,14 @@ import { useStateContext } from '../context/ContextProvider';
 import axiosClient from '../../../react/src/axios-client';
 import { message } from 'antd'
 import { Breadcrumbs } from '../components/Breadcrumbs'
+import { array } from 'prop-types';
 
 export const index = () => {
     const { user, token, permissions, setUser, setToken, setRole, setPermissions } = useStateContext();
     if (!token) {
         return <Navigate to={"/login"} />
     }
-    const [menuItems, setMenuItems] = useState([
-        getItem(<Link to={'/dashboard'}>Dashboard</Link>, 'dashboard', <DashboardOutlined />)
-    ]);
+
     const [collapsed, setCollapsed] = useState(false);
     const { Header, Sider, Content, Footer } = Layout;
     const navigate = useNavigate();
@@ -93,7 +93,7 @@ export const index = () => {
         };
     }
 
-    const rootSubmenuKeys = ['company'];
+    const rootSubmenuKeys = ['company', 'system'];
     const [openKeys, setOpenKeys] = useState(['company']);
     const onOpenChange = (keys) => {
         const latestOpenKey = keys.find((key) => openKeys.indexOf(key) === -1);
@@ -103,19 +103,28 @@ export const index = () => {
             setOpenKeys(latestOpenKey ? [latestOpenKey] : []);
         }
     };
-    console.log(permissions)
-    // const menuItemss = [
-    //     getItem(<Link to={'/dashboard'}>Dashboard</Link>, 'dashboard', <DashboardOutlined />),
-    //     getItem(<Link to={'/users'}>Users</Link>, 'users', <UserOutlined />),
-    //     getItem(<Link to={'/logs'}>Logs</Link>, 'logs', <HistoryOutlined />),
-    //     getItem('Company', 'company', <GroupOutlined />, [
-    //         getItem(<Link to={'/companies'}>Companies</Link>, 'companies'),
-    //         getItem(<Link to={'/import-excel'}>Import Excel</Link>, 'import-excel'),
-    //     ]),
-    // ]
-    // useEffect(() => {
-    //     setMenuItems()
-    // }, [])
+
+    const showMenuItems = () => {
+        let menu = [getItem(<Link to={'/dashboard'}>Dashboard</Link>, 'dashboard', <DashboardOutlined />)];
+        // console.log(permissions)
+        if (permissions.includes('acc.view')) {
+            menu = [...menu, getItem(<Link to={'/users'}>Users</Link>, 'users', <UserOutlined />)];
+        }
+        if (permissions.includes('com.view')) {
+            menu = [...menu, getItem('Company', 'company', <GroupOutlined />, [
+                getItem(<Link to={'/companies'}>Companies</Link>, 'companies'),
+                getItem(<Link to={'/import-excel'}>Import Excel</Link>, 'import-excel'),
+            ])];
+        }
+        if (permissions.includes('log.view') || permissions.includes('rol.view')) {
+            menu = [...menu, getItem('System', 'system', <SettingOutlined />, [
+                getItem(<Link to={'/roles'}>Roles</Link>, 'roles'),
+                getItem(<Link to={'/logs'}>Logs</Link>, 'logs'),
+            ])];
+        }
+        return menu;
+    }
+    const menuItems = showMenuItems();
 
     return (
         <Layout>

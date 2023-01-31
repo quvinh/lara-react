@@ -31,6 +31,7 @@ import dayjs from "dayjs";
 import "dayjs/locale/vi";
 import locale from "antd/locale/vi_VN";
 import { useStateContext } from "../../context/ContextProvider";
+import { useForm } from "antd/es/form/Form";
 export const index = () => {
     const [roles, setRoles] = useState([]);
 
@@ -51,6 +52,7 @@ export const index = () => {
         onSelectAll: (ev) => console.log(ev),
     };
     const hasSelected = selectedRowKeys.length > 0;
+    const [form] = useForm();
 
     useEffect(() => {
         getRoles();
@@ -220,7 +222,7 @@ export const index = () => {
             // fixed: "left",
             render: (text, roles) => (
                 <>
-                    <Button type="text" onClick={(ev) => showModal(roles.id)}>
+                    <Button type="text" onClick={(ev) => console(roles.id)}>
                         <div className="text-primary">{text}</div>
                     </Button>
                 </>
@@ -257,7 +259,7 @@ export const index = () => {
                     <Button
                         type="text"
                         className="text-warning"
-                        onClick={(ev) => showModal(roles.id)}
+                        onClick={(ev) => console.log(roles.id)}
                     >
                         <EditOutlined />
                     </Button>
@@ -274,31 +276,54 @@ export const index = () => {
             ),
         },
     ];
-    const [open, setOpen] = useState(false);
-    const showModal = (id) => {
-        setOpen(true);
-        console.log(id);
+    const [openAdd, setAddOpen] = useState(false);
+    const [openEdit, setEditOpen] = useState(false);
+    const addModal = () => {
+        setAddOpen(true);
     };
-    const handleOk = () => {
+    const edirModal = () => {
+        setEditOpen(true);
+    };
+    // const handleOk = () => {
+    //     setLoading(true);
+    //     setTimeout(() => {
+    //         setLoading(false);
+    //         setAddOpen(false);
+    //     }, 3000);
+    // };
+    const handleCancelAdd = () => {
+        setAddOpen(false);
+    };
+    const handleCancelEdit = () => {
+        setEditOpen(false);
+    };
+
+    const addForm = (values) => {
+        console.log(values);
         setLoading(true);
-        setTimeout(() => {
-            setLoading(false);
-            setOpen(false);
-        }, 3000);
+        axiosClient
+            .post("/roles", values)
+            .then(() => {
+                message.success("Role was successfully created");
+                getRoles();
+            })
+            .catch((err) => {
+                setLoading(false);
+                if (err.response.status == 422) {
+                    message.error(err.response.data.name[0]);
+                }
+            });
     };
-    const handleCancel = () => {
-        setOpen(false);
-    };
+
+    const editForm = (values) => {
+        console.log(values);
+    }
 
     return (
         <>
             <div className="row mb-1">
                 <div className="col-md-2">
-                    <Button
-                        className="w-100"
-                        type="primary"
-                        onClick={(ev) => showModal(0)}
-                    >
+                    <Button className="w-100" type="primary" onClick={addModal}>
                         <PlusOutlined /> Add Role
                     </Button>
                 </div>
@@ -330,14 +355,13 @@ export const index = () => {
             />
 
             <Modal
-                open={open}
-                title="Title"
-                onOk={handleOk}
-                onCancel={handleCancel}
-                okButtonProps={{ style: { display: 'none' } }}
-                cancelButtonProps={{ style: { display: 'none' } }}
+                open={openAdd}
+                title="Add Role"
+                onCancel={handleCancelAdd}
+                okButtonProps={{ style: { display: "none" } }}
+                cancelButtonProps={{ style: { display: "none" } }}
             >
-                <Form>
+                <Form onFinish={addForm}>
                     <Form.Item
                         hasFeedback
                         name="name"
@@ -351,9 +375,44 @@ export const index = () => {
                     >
                         <Input
                             placeholder="..."
-                            onChange={(ev) =>
-                                console.log(ev.target.value)
-                            }
+                            onChange={(ev) => console.log(ev.target.value)}
+                        />
+                    </Form.Item>
+                    <Form.Item className="d-flex justify-content-end">
+                        <Button
+                            className="me-1"
+                            type="primary"
+                            htmlType="submit"
+                        >
+                            Submit
+                        </Button>
+                    </Form.Item>
+                </Form>
+            </Modal>
+
+            <Modal
+                open={openEdit}
+                title="Edit Role"
+                onOk={ev => console.log('OK')}
+                onCancel={ev => console.log('Cancel')}
+                okButtonProps={{ style: { display: "none" } }}
+                cancelButtonProps={{ style: { display: "none" } }}
+            >
+                <Form onFinish={editForm}>
+                    <Form.Item
+                        hasFeedback
+                        name="name"
+                        label="Name"
+                        rules={[
+                            {
+                                required: true,
+                                message: "Please input your Name!",
+                            },
+                        ]}
+                    >
+                        <Input
+                            placeholder="..."
+                            onChange={(ev) => console.log(ev.target.value)}
                         />
                     </Form.Item>
                     <Form.Item className="d-flex justify-content-end">

@@ -38,36 +38,36 @@ class DatabaseSeeder extends Seeder
         // Permission
         DB::table('permissions')->insert([
             // Account
-            ['name' => 'acc.add', 'guard_name' => 'web'],
-            ['name' => 'acc.edit', 'guard_name' => 'web'],
-            ['name' => 'acc.delete', 'guard_name' => 'web'],
-            ['name' => 'acc.view', 'guard_name' => 'web'],
-            ['name' => 'acc.confirm', 'guard_name' => 'web'],
+            ['name' => 'account.add', 'guard_name' => 'web'],
+            ['name' => 'account.edit', 'guard_name' => 'web'],
+            ['name' => 'account.delete', 'guard_name' => 'web'],
+            ['name' => 'account.view', 'guard_name' => 'web'],
+            ['name' => 'account.confirm', 'guard_name' => 'web'],
 
             // Invoice
-            ['name' => 'inv.add', 'guard_name' => 'web'],
-            ['name' => 'inv.edit', 'guard_name' => 'web'],
-            ['name' => 'inv.delete', 'guard_name' => 'web'],
-            ['name' => 'inv.view', 'guard_name' => 'web'],
-            ['name' => 'inv.confirm', 'guard_name' => 'web'],
+            ['name' => 'invoice.add', 'guard_name' => 'web'],
+            ['name' => 'invoice.edit', 'guard_name' => 'web'],
+            ['name' => 'invoice.delete', 'guard_name' => 'web'],
+            ['name' => 'invoice.view', 'guard_name' => 'web'],
+            ['name' => 'invoice.confirm', 'guard_name' => 'web'],
 
             // Log system
             ['name' => 'log.delete', 'guard_name' => 'web'],
             ['name' => 'log.view', 'guard_name' => 'web'],
 
             // Role
-            ['name' => 'rol.add', 'guard_name' => 'web'],
-            ['name' => 'rol.edit', 'guard_name' => 'web'],
-            ['name' => 'rol.delete', 'guard_name' => 'web'],
-            ['name' => 'rol.view', 'guard_name' => 'web'],
-            ['name' => 'rol.confirm', 'guard_name' => 'web'],
+            ['name' => 'role.add', 'guard_name' => 'web'],
+            ['name' => 'role.edit', 'guard_name' => 'web'],
+            ['name' => 'role.delete', 'guard_name' => 'web'],
+            ['name' => 'role.view', 'guard_name' => 'web'],
+            ['name' => 'role.confirm', 'guard_name' => 'web'],
 
             // Company
-            ['name' => 'com.add', 'guard_name' => 'web'],
-            ['name' => 'com.edit', 'guard_name' => 'web'],
-            ['name' => 'com.delete', 'guard_name' => 'web'],
-            ['name' => 'com.view', 'guard_name' => 'web'],
-            ['name' => 'com.confirm', 'guard_name' => 'web'],
+            ['name' => 'company.add', 'guard_name' => 'web'],
+            ['name' => 'company.edit', 'guard_name' => 'web'],
+            ['name' => 'company.delete', 'guard_name' => 'web'],
+            ['name' => 'company.view', 'guard_name' => 'web'],
+            ['name' => 'company.confirm', 'guard_name' => 'web'],
         ]);
 
         // Role

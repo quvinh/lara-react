@@ -22,6 +22,8 @@ import {
     FloatButton,
     Tag,
     Modal,
+    Checkbox,
+    Divider,
 } from "antd";
 import Highlighter from "react-highlight-words";
 import axiosClient from "../../axios-client";
@@ -52,7 +54,13 @@ export const index = () => {
         onSelectAll: (ev) => console.log(ev),
     };
     const hasSelected = selectedRowKeys.length > 0;
-    const [form] = useForm();
+    const [roleSelected, setRoleSelected] = useState({
+        id: null,
+        name: "",
+        permissions: [],
+    });
+    const [storeForm] = useForm();
+    const [updateForm] = useForm();
 
     useEffect(() => {
         getRoles();
@@ -222,7 +230,7 @@ export const index = () => {
             // fixed: "left",
             render: (text, roles) => (
                 <>
-                    <Button type="text" onClick={(ev) => console(roles.id)}>
+                    <Button type="text" onClick={(ev) => editModal(roles.id)}>
                         <div className="text-primary">{text}</div>
                     </Button>
                 </>
@@ -281,8 +289,24 @@ export const index = () => {
     const addModal = () => {
         setAddOpen(true);
     };
-    const edirModal = () => {
-        setEditOpen(true);
+    const editModal = (id) => {
+        axiosClient
+            .get(`/roles/${id}`)
+            .then(({ data }) => {
+                console.log(data);
+                const role = data.data;
+                updateForm.setFieldsValue({
+                    name: role.name,
+                });
+                setRoleSelected({
+                    name: role.name,
+                });
+                setEditOpen(true);
+            })
+            .catch((err) => {
+                console.log(err);
+                message.error("error");
+            });
     };
     // const handleOk = () => {
     //     setLoading(true);
@@ -306,6 +330,8 @@ export const index = () => {
             .then(() => {
                 message.success("Role was successfully created");
                 getRoles();
+                storeForm.setFieldsValue({ name: "" });
+                handleCancelAdd();
             })
             .catch((err) => {
                 setLoading(false);
@@ -317,7 +343,24 @@ export const index = () => {
 
     const editForm = (values) => {
         console.log(values);
-    }
+    };
+
+    const CheckboxGroup = Checkbox.Group;
+    const plainOptions = ["Apple", "Pear", "Orange"];
+    const defaultCheckedList = ["Apple", "Orange"];
+    const [checkedList, setCheckedList] = useState(defaultCheckedList);
+    const [indeterminate, setIndeterminate] = useState(true);
+    const [checkAll, setCheckAll] = useState(false);
+    const onChange = (list) => {
+        setCheckedList(list);
+        setIndeterminate(!!list.length && list.length < plainOptions.length);
+        setCheckAll(list.length === plainOptions.length);
+    };
+    const onCheckAllChange = (e) => {
+        setCheckedList(e.target.checked ? plainOptions : []);
+        setIndeterminate(false);
+        setCheckAll(e.target.checked);
+    };
 
     return (
         <>
@@ -355,13 +398,14 @@ export const index = () => {
             />
 
             <Modal
+                forceRender
                 open={openAdd}
                 title="Add Role"
                 onCancel={handleCancelAdd}
                 okButtonProps={{ style: { display: "none" } }}
                 cancelButtonProps={{ style: { display: "none" } }}
             >
-                <Form onFinish={addForm}>
+                <Form form={storeForm} onFinish={addForm}>
                     <Form.Item
                         hasFeedback
                         name="name"
@@ -377,6 +421,19 @@ export const index = () => {
                             placeholder="..."
                             onChange={(ev) => console.log(ev.target.value)}
                         />
+                    </Form.Item>
+                    <Divider />
+                    {/* <Form.Item valuePropName="checked">
+                        <Checkbox
+                            indeterminate={indeterminate}
+                            onChange={onCheckAllChange}
+                            checked={checkAll}
+                        >
+                            Check all
+                        </Checkbox>
+                    </Form.Item> */}
+                    <Form.Item name="remember" valuePropName="checked" noStyle>
+                        <Checkbox>Remember me</Checkbox>
                     </Form.Item>
                     <Form.Item className="d-flex justify-content-end">
                         <Button
@@ -391,14 +448,15 @@ export const index = () => {
             </Modal>
 
             <Modal
+                forceRender
                 open={openEdit}
-                title="Edit Role"
-                onOk={ev => console.log('OK')}
-                onCancel={ev => console.log('Cancel')}
+                width={900}
+                title={`Edit Role: ${roleSelected.name}`}
+                onCancel={handleCancelEdit}
                 okButtonProps={{ style: { display: "none" } }}
                 cancelButtonProps={{ style: { display: "none" } }}
             >
-                <Form onFinish={editForm}>
+                <Form form={updateForm} onFinish={editForm}>
                     <Form.Item
                         hasFeedback
                         name="name"
@@ -412,7 +470,12 @@ export const index = () => {
                     >
                         <Input
                             placeholder="..."
-                            onChange={(ev) => console.log(ev.target.value)}
+                            onChange={(ev) =>
+                                setRoleSelected({
+                                    ...roleSelected,
+                                    name: ev.target.value,
+                                })
+                            }
                         />
                     </Form.Item>
                     <Form.Item className="d-flex justify-content-end">
@@ -421,7 +484,7 @@ export const index = () => {
                             type="primary"
                             htmlType="submit"
                         >
-                            Submit
+                            Update
                         </Button>
                     </Form.Item>
                 </Form>

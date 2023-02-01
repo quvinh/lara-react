@@ -15,13 +15,13 @@ class RoleController extends Controller
 {
     public static function Routes() 
     {
-        Route::group(['middleware' => ['can:rol.view']], function () {
+        Route::group(['middleware' => ['can:role.view']], function () {
             Route::get('/roles', [RoleController::class, 'index']);
             Route::get('/roles/{id}', [RoleController::class, 'show']);
         });
-        Route::post('/roles', [RoleController::class, 'store'])->middleware('can:rol.add');
-        Route::put('/roles/{id}', [RoleController::class, 'update'])->middleware('can:rol.edit');
-        Route::delete('/roles/{id}', [RoleController::class, 'destroy'])->middleware('can:rol.delete');
+        Route::post('/roles', [RoleController::class, 'store'])->middleware('can:role.add');
+        Route::put('/roles/{id}', [RoleController::class, 'update'])->middleware('can:role.edit');
+        Route::delete('/roles/{id}', [RoleController::class, 'destroy'])->middleware('can:role.delete');
     }
 
     /**
@@ -82,7 +82,8 @@ class RoleController extends Controller
      */
     public function show($id)
     {
-        $role = Role::findById($id);
+        $role = Role::find($id);
+        $role->getAllPermissions();
         return new RoleResource($role);
     }
 

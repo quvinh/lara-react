@@ -20,14 +20,14 @@ class UserController extends Controller
 {
     public static function Routes()
     {
-        Route::group(['middleware' => ['can:acc.view']], function () {
+        Route::group(['middleware' => ['can:account.view']], function () {
             Route::get('/users', [UserController::class, 'index']);
             Route::get('/users/{id}', [UserController::class, 'show']);
         });
 
-        Route::post('/users', [UserController::class, 'store'])->middleware('can:acc.add');
-        Route::post('/users/{id}', [UserController::class, 'update'])->middleware('can:acc.edit');
-        Route::delete('/users/{id}', [UserController::class, 'destroy'])->middleware('can:acc.delete');
+        Route::post('/users', [UserController::class, 'store'])->middleware('can:account.add');
+        Route::post('/users/{id}', [UserController::class, 'update'])->middleware('can:account.edit');
+        Route::delete('/users/{id}', [UserController::class, 'destroy'])->middleware('can:account.delete');
     }
 
     /**

@@ -1,17 +1,17 @@
-import { SearchOutlined, UploadOutlined } from '@ant-design/icons';
-import { Button, Input, message, Space, Table, Upload } from 'antd';
-import { useRef, useState } from 'react';
-import { ExcelRenderer } from 'react-excel-renderer';
-import Highlighter from 'react-highlight-words';
+import { SearchOutlined, UploadOutlined } from "@ant-design/icons";
+import { Button, Input, message, Space, Table, Upload } from "antd";
+import { Link } from "react-router-dom";
+import { useRef, useState } from "react";
+import { ExcelRenderer } from "react-excel-renderer";
+import Highlighter from "react-highlight-words";
 
 export const ImportInventory = (props) => {
-
     const [data, setData] = useState({
-        rows: props.inventory
+        rows: props.inventory,
     });
 
-    const [searchText, setSearchText] = useState('');
-    const [searchedColumn, setSearchedColumn] = useState('');
+    const [searchText, setSearchText] = useState("");
+    const [searchedColumn, setSearchedColumn] = useState("");
     const [loading, setLoading] = useState(false);
     const searchInput = useRef(null);
 
@@ -22,10 +22,16 @@ export const ImportInventory = (props) => {
     };
     const handleReset = (clearFilters) => {
         clearFilters();
-        setSearchText('');
+        setSearchText("");
     };
     const getColumnSearchProps = (dataIndex) => ({
-        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
+        filterDropdown: ({
+            setSelectedKeys,
+            selectedKeys,
+            confirm,
+            clearFilters,
+            close,
+        }) => (
             <div
                 style={{
                     padding: 8,
@@ -36,17 +42,23 @@ export const ImportInventory = (props) => {
                     ref={searchInput}
                     placeholder={`Search ${dataIndex}`}
                     value={selectedKeys[0]}
-                    onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-                    onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+                    onChange={(e) =>
+                        setSelectedKeys(e.target.value ? [e.target.value] : [])
+                    }
+                    onPressEnter={() =>
+                        handleSearch(selectedKeys, confirm, dataIndex)
+                    }
                     style={{
                         marginBottom: 8,
-                        display: 'block',
+                        display: "block",
                     }}
                 />
                 <Space>
                     <Button
                         type="primary"
-                        onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+                        onClick={() =>
+                            handleSearch(selectedKeys, confirm, dataIndex)
+                        }
                         icon={<SearchOutlined />}
                         size="small"
                         style={{
@@ -56,7 +68,9 @@ export const ImportInventory = (props) => {
                         Search
                     </Button>
                     <Button
-                        onClick={() => clearFilters && handleReset(clearFilters)}
+                        onClick={() =>
+                            clearFilters && handleReset(clearFilters)
+                        }
                         size="small"
                         style={{
                             width: 90,
@@ -92,12 +106,15 @@ export const ImportInventory = (props) => {
         filterIcon: (filtered) => (
             <SearchOutlined
                 style={{
-                    color: filtered ? '#1890ff' : undefined,
+                    color: filtered ? "#1890ff" : undefined,
                 }}
             />
         ),
         onFilter: (value, record) =>
-            record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+            record[dataIndex]
+                .toString()
+                .toLowerCase()
+                .includes(value.toLowerCase()),
         onFilterDropdownOpenChange: (visible) => {
             if (visible) {
                 setTimeout(() => searchInput.current?.select(), 100);
@@ -107,12 +124,12 @@ export const ImportInventory = (props) => {
             searchedColumn === dataIndex ? (
                 <Highlighter
                     highlightStyle={{
-                        backgroundColor: '#ffc069',
+                        backgroundColor: "#ffc069",
                         padding: 0,
                     }}
                     searchWords={[searchText]}
                     autoEscape
-                    textToHighlight={text ? text.toString() : ''}
+                    textToHighlight={text ? text.toString() : ""}
                 />
             ) : (
                 text
@@ -121,115 +138,123 @@ export const ImportInventory = (props) => {
 
     const cols = [
         {
-            title: 'STT',
-            dataIndex: 'no',
-            key: 'no',
-            width: '5%',
+            title: "STT",
+            dataIndex: "no",
+            key: "no",
+            width: "5%",
             sorter: (a, b) => a.no - b.no,
-            sortDirections: ['descend', 'ascend'],
-            fixed: 'left'
+            sortDirections: ["descend", "ascend"],
+            fixed: "left",
         },
         {
-            title: 'Mã sản phẩm',
-            dataIndex: 'masanpham',
-            key: 'masanpham',
-            ...getColumnSearchProps('masanpham'),
+            title: "Mã sản phẩm",
+            dataIndex: "masanpham",
+            key: "masanpham",
+            ...getColumnSearchProps("masanpham"),
             sorter: (a, b) => a.masanpham.length - b.masanpham.length,
-            sortDirections: ['descend', 'ascend'],
-            fixed: 'left',
+            sortDirections: ["descend", "ascend"],
+            fixed: "left",
         },
         {
-            title: 'Tên hàng hóa',
-            dataIndex: 'tenhanghoa',
-            ...getColumnSearchProps('tenhanghoa'),
-            key: 'tenhanghoa'
+            title: "Tên hàng hóa",
+            dataIndex: "tenhanghoa",
+            ...getColumnSearchProps("tenhanghoa"),
+            key: "tenhanghoa",
         },
         {
-            title: 'Đơn vị tính',
-            dataIndex: 'dvt',
-            key: 'dvt',
-            width: 90
+            title: "Đơn vị tính",
+            dataIndex: "dvt",
+            key: "dvt",
+            width: 90,
         },
         {
-            title: 'Tồn đầu kỳ',
+            title: "Tồn đầu kỳ",
             children: [
                 {
-                    title: 'Số lượng',
-                    dataIndex: 'slg_dauky',
+                    title: "Số lượng",
+                    dataIndex: "slg_dauky",
                     width: 75,
-                    key: 'slg_dauky'
+                    key: "slg_dauky",
                 },
                 {
-                    title: 'Thành tiền',
-                    dataIndex: 'thtien_dauky',
-                    key: 'thtien_dauky'
+                    title: "Thành tiền",
+                    dataIndex: "thtien_dauky",
+                    key: "thtien_dauky",
                 },
-            ]
+            ],
         },
         {
-            title: 'Nhập trong kỳ',
+            title: "Nhập trong kỳ",
             children: [
                 {
-                    title: 'Số lượng',
-                    dataIndex: 'slg_nhaptrongky',
+                    title: "Số lượng",
+                    dataIndex: "slg_nhaptrongky",
                     width: 75,
-                    key: 'slg_nhaptrongky'
+                    key: "slg_nhaptrongky",
                 },
                 {
-                    title: 'Thành tiền',
-                    dataIndex: 'thtien_nhaptrongky',
-                    key: 'thtien_nhaptrongky'
+                    title: "Thành tiền",
+                    dataIndex: "thtien_nhaptrongky",
+                    key: "thtien_nhaptrongky",
                 },
-            ]
+            ],
         },
         {
-            title: 'Xuất trong kỳ',
+            title: "Xuất trong kỳ",
             children: [
                 {
-                    title: 'Số lượng',
-                    dataIndex: 'slg_xuattrongky',
+                    title: "Số lượng",
+                    dataIndex: "slg_xuattrongky",
                     width: 75,
-                    key: 'slg_xuattrongky'
+                    key: "slg_xuattrongky",
                 },
                 {
-                    title: 'Thành tiền',
-                    dataIndex: 'thtien_xuattrongky',
-                    key: 'thtien_xuattrongky'
+                    title: "Thành tiền",
+                    dataIndex: "thtien_xuattrongky",
+                    key: "thtien_xuattrongky",
                 },
-            ]
+            ],
         },
         {
-            title: 'Tồn cuối kỳ',
+            title: "Tồn cuối kỳ",
             children: [
                 {
-                    title: 'Số lượng',
-                    dataIndex: 'slg_cuoiky',
-                    key: 'slg_cuoiky',
+                    title: "Số lượng",
+                    dataIndex: "slg_cuoiky",
+                    key: "slg_cuoiky",
                     width: 75,
-                    fixed: 'right'
+                    fixed: "right",
                 },
                 {
-                    title: 'Thành tiền',
-                    dataIndex: 'thtien_cuoiky',
-                    key: 'thtien_cuoiky',
-                    fixed: 'right'
+                    title: "Thành tiền",
+                    dataIndex: "thtien_cuoiky",
+                    key: "thtien_cuoiky",
+                    fixed: "right",
                 },
                 {
-                    title: 'Đơn giá TB',
-                    key: 'avg',
-                    fixed: 'right',
+                    title: "Đơn giá TB",
+                    key: "avg",
+                    fixed: "right",
                     render: (_, record) => (
-                        <span className="text-primary">{record.slg_cuoiky == 0 ? 0 : (record.thtien_cuoiky/record.slg_cuoiky).toFixed(1)}</span>
-                    )
+                        <span className="text-primary">
+                            {record.slg_cuoiky == 0
+                                ? 0
+                                : (
+                                      record.thtien_cuoiky / record.slg_cuoiky
+                                  ).toFixed(1)}
+                        </span>
+                    ),
                 },
-            ]
+            ],
         },
-    ]
+    ];
 
     const beforeUpload = (file) => {
-        const isXlsx = file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+        const isXlsx =
+            file.type ===
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
         if (!isXlsx) {
-            message.error('You can only upload XLSX file!');
+            message.error("You can only upload XLSX file!");
         }
         return isXlsx;
     };
@@ -242,48 +267,63 @@ export const ImportInventory = (props) => {
                 if (err) {
                     console.log(err);
                     setLoading(false);
-                }
-                else {
+                } else {
                     const rows = [];
                     let i = 0;
-                    resp.rows && resp.rows.map((row, index) => {
-                        if (row.length >= 11 && row[0]) {
-                            rows.push({
-                                key: i,
-                                no: i + 1,
-                                masanpham: row[0],
-                                tenhanghoa: row[1],
-                                dvt: row[2],
-                                slg_dauky: row[3],
-                                thtien_dauky: row[4],
-                                slg_nhaptrongky: row[5],
-                                thtien_nhaptrongky: row[6],
-                                slg_xuattrongky: row[7],
-                                thtien_xuattrongky: row[8],
-                                slg_cuoiky: row[9],
-                                thtien_cuoiky: row[10],
-                            })
-                            i += 1;
-                        }
-                    })
+                    resp.rows &&
+                        resp.rows.map((row, index) => {
+                            if (row.length >= 11 && row[0]) {
+                                rows.push({
+                                    key: i,
+                                    no: i + 1,
+                                    masanpham: row[0],
+                                    tenhanghoa: row[1],
+                                    dvt: row[2],
+                                    slg_dauky: row[3],
+                                    thtien_dauky: row[4],
+                                    slg_nhaptrongky: row[5],
+                                    thtien_nhaptrongky: row[6],
+                                    slg_xuattrongky: row[7],
+                                    thtien_xuattrongky: row[8],
+                                    slg_cuoiky: row[9],
+                                    thtien_cuoiky: row[10],
+                                });
+                                i += 1;
+                            }
+                        });
                     setData({
                         // cols: cols,
-                        rows: rows
+                        rows: rows,
                     });
-                    props.setInventory([...rows])
+                    props.setInventory([...rows]);
                     setLoading(false);
-                    props.data
+                    props.data;
                 }
             });
         }
-    }
+    };
 
     return (
         <div>
             <div className="text-center mb-2 mt-2 fz-18">
                 <b className="text-muted">TỒN ĐẦU KỲ</b>
             </div>
-            <Input type='file' name='fileUpload' onChange={onChangeFile} className='mb-2' />
+
+            <div className="d-flex justify-content-between align-items-center">
+                <div>
+                    <Input
+                        type="file"
+                        name="fileUpload"
+                        onChange={onChangeFile}
+                        className="mb-2"
+                    />
+                </div>
+                <div>
+                    <Button className="me-1">
+                        <a href={"/files/MauTonKho.xlsx"} target="_blank" download>File Mẫu</a>
+                    </Button>
+                </div>
+            </div>
             <Table
                 loading={loading}
                 dataSource={data.rows}
@@ -295,12 +335,13 @@ export const ImportInventory = (props) => {
                     y: 500,
                 }}
                 pagination={{
-                    showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
+                    showTotal: (total, range) =>
+                        `${range[0]}-${range[1]} of ${total} items`,
                     defaultPageSize: 20,
-                    position: ['topRight', 'bottomRight'],
-                    pageSizeOptions: [10, 20, 50, 100, 500]
-                }} />
+                    position: ["topRight", "bottomRight"],
+                    pageSizeOptions: [10, 20, 50, 100, 500],
+                }}
+            />
         </div>
-
-    )
-}
+    );
+};

@@ -26,5 +26,6 @@ Route::middleware('auth:sanctum')->group(function () {
     UserController::Routes();
     LogController::Routes();
     RoleController::Routes();
+    
 });
 Route::post('/login', [AuthController::class, 'login']);

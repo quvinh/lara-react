@@ -148,7 +148,7 @@ export const index = () => {
             ),
         ];
         // console.log(permissions)
-        if (permissions.includes("account.view")) {
+        if (permissions && permissions.includes("account.view")) {
             menu = [
                 ...menu,
                 getItem(
@@ -158,7 +158,7 @@ export const index = () => {
                 ),
             ];
         }
-        if (permissions.includes("company.view")) {
+        if (permissions && permissions.includes("company.view")) {
             menu = [
                 ...menu,
                 getItem("Company", "company", <GroupOutlined />, [
@@ -174,8 +174,8 @@ export const index = () => {
             ];
         }
         if (
-            permissions.includes("log.view") ||
-            permissions.includes("role.view")
+            permissions && (permissions.includes("log.view") ||
+            permissions.includes("role.view"))
         ) {
             menu = [
                 ...menu,

@@ -9,11 +9,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Validator;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
 {
-    public static function Routes() 
+    public static function Routes()
     {
         Route::group(['middleware' => ['can:role.view']], function () {
             Route::get('/roles', [RoleController::class, 'index']);
@@ -31,7 +32,12 @@ class RoleController extends Controller
      */
     public function index()
     {
-        return RoleResource::collection(Role::all());
+        $roles = Role::all();
+        $permissions = Permission::all();
+        return response()->json([
+            'roles' => RoleResource::collection($roles),
+            'permissions' => RoleResource::collection($permissions)
+        ], 201);
     }
 
     /**
@@ -55,7 +61,7 @@ class RoleController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:100|unique:roles,name'
         ]);
-        if($validator->fails()) {
+        if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
         $role = Role::create([
@@ -110,7 +116,7 @@ class RoleController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:100|unique:roles,name,' . $id
         ]);
-        if($validator->fails()) {
+        if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
         $role = Role::findById($id);

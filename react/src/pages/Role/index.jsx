@@ -24,6 +24,8 @@ import {
     Modal,
     Checkbox,
     Divider,
+    Row,
+    Col,
 } from "antd";
 import Highlighter from "react-highlight-words";
 import axiosClient from "../../axios-client";
@@ -34,8 +36,10 @@ import "dayjs/locale/vi";
 import locale from "antd/locale/vi_VN";
 import { useStateContext } from "../../context/ContextProvider";
 import { useForm } from "antd/es/form/Form";
+import { CbPermissions } from "./CbPermissions";
 export const index = () => {
     const [roles, setRoles] = useState([]);
+    const [permissionsName, setPermissionsName] = useState([]);
 
     const [searchText, setSearchText] = useState("");
     const [searchedColumn, setSearchedColumn] = useState("");
@@ -59,6 +63,8 @@ export const index = () => {
         name: "",
         permissions: [],
     });
+    const [permissionsSelected, setPermissionsSelected] = useState([]);
+
     const [storeForm] = useForm();
     const [updateForm] = useForm();
 
@@ -71,7 +77,16 @@ export const index = () => {
         axiosClient
             .get("/roles")
             .then(({ data }) => {
-                setRoles(data.data);
+                const permissions = [];
+                setRoles(data.roles);
+                data.permissions &&
+                    data.permissions.map((item, index) => {
+                        if (!permissions.includes(item.name.split(".")[0])) {
+                            permissions.push(item.name.split(".")[0]);
+                        }
+                    });
+                permissions.sort();
+                setPermissionsName(permissions);
                 setLoading(false);
             })
             .catch((err) => {
@@ -293,14 +308,19 @@ export const index = () => {
         axiosClient
             .get(`/roles/${id}`)
             .then(({ data }) => {
-                console.log(data);
+                // console.log(data);
                 const role = data.data;
+                const permissions = [];
                 updateForm.setFieldsValue({
                     name: role.name,
                 });
                 setRoleSelected({
                     name: role.name,
+                    // permissions: [...role.permissions.map((item) => item.name)],
                 });
+                setPermissionsSelected([
+                    ...role.permissions.map((item) => item.name),
+                ]);
                 setEditOpen(true);
             })
             .catch((err) => {
@@ -323,7 +343,7 @@ export const index = () => {
     };
 
     const addForm = (values) => {
-        console.log(values);
+        // console.log(values);
         setLoading(true);
         axiosClient
             .post("/roles", values)
@@ -346,8 +366,8 @@ export const index = () => {
     };
 
     const CheckboxGroup = Checkbox.Group;
-    const plainOptions = ["Apple", "Pear", "Orange"];
-    const defaultCheckedList = ["Apple", "Orange"];
+    const plainOptions = ["View", "Add", "Edit", "Delete", "Confirm"];
+    const defaultCheckedList = [];
     const [checkedList, setCheckedList] = useState(defaultCheckedList);
     const [indeterminate, setIndeterminate] = useState(true);
     const [checkAll, setCheckAll] = useState(false);
@@ -422,19 +442,6 @@ export const index = () => {
                             onChange={(ev) => console.log(ev.target.value)}
                         />
                     </Form.Item>
-                    <Divider />
-                    {/* <Form.Item valuePropName="checked">
-                        <Checkbox
-                            indeterminate={indeterminate}
-                            onChange={onCheckAllChange}
-                            checked={checkAll}
-                        >
-                            Check all
-                        </Checkbox>
-                    </Form.Item> */}
-                    <Form.Item name="remember" valuePropName="checked" noStyle>
-                        <Checkbox>Remember me</Checkbox>
-                    </Form.Item>
                     <Form.Item className="d-flex justify-content-end">
                         <Button
                             className="me-1"
@@ -477,6 +484,59 @@ export const index = () => {
                                 })
                             }
                         />
+                    </Form.Item>
+                    <Divider />
+                    <Form.Item valuePropName="checked">
+                        <Checkbox
+                            indeterminate={indeterminate}
+                            onChange={onCheckAllChange}
+                            checked={checkAll}
+                        >
+                            Check all
+                        </Checkbox>
+                        <CheckboxGroup
+                            options={plainOptions}
+                            value={checkedList}
+                            onChange={onChange}
+                        />
+                    </Form.Item>
+
+                    <Form.Item>
+                        <Row className="w-100">
+                            <Col span={6}>
+                                <b>Permissions</b>
+                            </Col>
+                            <Col span={3}>
+                                <b>All</b>
+                            </Col>
+                            <Col span={3}>
+                                <b>View</b>
+                            </Col>
+                            <Col span={3}>
+                                <b>Add</b>
+                            </Col>
+                            <Col span={3}>
+                                <b>Edit</b>
+                            </Col>
+                            <Col span={3}>
+                                <b>Delete</b>
+                            </Col>
+                            <Col span={3}>
+                                <b>Confirm</b>
+                            </Col>
+                        </Row>
+                        {openEdit && permissionsName.length > 0 &&
+                            permissionsName.map((item, index) => {
+                                const per = [...permissionsSelected.filter(value => value.split(".")[0] == item)];
+                                // console.log(per)
+                                return (
+                                    <CbPermissions
+                                        key={index}
+                                        permissions={per}
+                                        item={item}
+                                    />
+                                );
+                            })}
                     </Form.Item>
                     <Form.Item className="d-flex justify-content-end">
                         <Button

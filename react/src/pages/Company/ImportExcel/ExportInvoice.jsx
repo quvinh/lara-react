@@ -16,6 +16,7 @@ import {
     Table,
     Upload,
     Typography,
+    AutoComplete,
 } from "antd";
 import { Link } from "react-router-dom";
 import dayjs from "dayjs";
@@ -26,44 +27,112 @@ import Highlighter from "react-highlight-words";
 import stringSimilarity from "string-similarity";
 import { Excel } from "antd-table-saveas-excel";
 
-const EditableCell = ({
-    editing,
-    dataIndex,
-    title,
-    inputType,
-    record,
-    index,
-    children,
-    ...restProps
-}) => {
-    const inputNode = inputType === "number" ? <InputNumber /> : <Input />;
-    return (
-        <td {...restProps}>
-            {editing ? (
-                <Form.Item
-                    name={dataIndex}
-                    style={{
-                        margin: 0,
-                    }}
-                    rules={[
-                        {
-                            required: true,
-                            message: `Please Input ${title}!`,
-                        },
-                    ]}
-                >
-                    {inputNode}
-                </Form.Item>
-            ) : (
-                children
-            )}
-        </td>
-    );
-};
-
 export const ExportInvoice = (props) => {
+    // props
     const [data, setData] = useState([...props.exportInvoice]);
     const inventory = [...props.inventory];
+
+    const mockVal = (str) => {
+        const arr = [];
+        inventory
+            .filter((item) =>
+                item.masanpham.toLowerCase().includes(str.toLowerCase())
+            )
+            .map((item) => {
+                arr.push({
+                    value: item.masanpham,
+                    label: (
+                        <div className="d-flex justify-content-between align-items-center">
+                            <div>{item.masanpham}</div>
+                            <div className="d-flex justify-content-between align-items-center">
+                                <small>
+                                    <span className="text-muted">u:</span>
+                                    <span className="text-primary">
+                                        {item.dvt}
+                                    </span>
+                                    &nbsp;
+                                    <span className="text-muted">avg:</span>
+                                    <span className="text-primary">
+                                        {item.slg_cuoiky == 0
+                                            ? 0
+                                            : parseFloat(
+                                                  (
+                                                      item.thtien_cuoiky /
+                                                      item.slg_cuoiky
+                                                  ).toFixed(0)
+                                              ).toLocaleString("en-US")}
+                                    </span>
+                                </small>
+                            </div>
+                        </div>
+                    ),
+                });
+            });
+        return arr;
+        // console.log(inventory.filter((item) => (item.masanpham.toLowerCase()).includes(str)))
+    };
+
+    const EditableCell = ({
+        editing,
+        dataIndex,
+        title,
+        inputType,
+        record,
+        index,
+        children,
+        ...restProps
+    }) => {
+        //Autocomplete
+        const [value, setValue] = useState("");
+        const [options, setOptions] = useState([]);
+        const onSearch = (searchText) => {
+            setOptions(!searchText ? [] : mockVal(searchText));
+        };
+        const onSelect = (data) => {
+            console.log("onSelect", data);
+        };
+        const onChange = (data) => {
+            setValue(data);
+        };
+        const inputNode =
+            inputType === "number" ? (
+                <InputNumber />
+            ) : (
+                <AutoComplete
+                    options={options}
+                    onSelect={onSelect}
+                    onSearch={onSearch}
+                    dropdownMatchSelectWidth={500}
+                    filterOption={(inputValue, option) =>
+                        option.value
+                            .toUpperCase()
+                            .indexOf(inputValue.toUpperCase()) !== -1
+                    }
+                />
+            );
+        return (
+            <td {...restProps}>
+                {editing ? (
+                    <Form.Item
+                        name={dataIndex}
+                        style={{
+                            margin: 0,
+                        }}
+                        rules={[
+                            {
+                                required: true,
+                                message: `Please Input ${title}!`,
+                            },
+                        ]}
+                    >
+                        {inputNode}
+                    </Form.Item>
+                ) : (
+                    children
+                )}
+            </td>
+        );
+    };
 
     const [searchText, setSearchText] = useState("");
     const [searchedColumn, setSearchedColumn] = useState("");
@@ -235,11 +304,15 @@ export const ExportInvoice = (props) => {
     const selectCodeProps = (code, name, unit, price) => {
         if (
             inventory.filter(
-                (item) => item.tenhanghoa == name && item.dvt == unit
+                (item) =>
+                    item.tenhanghoa == name &&
+                    item.dvt.toLowerCase() == unit.toLowerCase()
             ).length > 0
         ) {
             const filter = inventory.filter(
-                (item) => item.tenhanghoa == name && item.dvt == unit
+                (item) =>
+                    item.tenhanghoa == name &&
+                    item.dvt.toLowerCase() == unit.toLowerCase()
             );
             let result = "";
             filter.map((value) => {
@@ -259,7 +332,7 @@ export const ExportInvoice = (props) => {
                 }
             });
             return result;
-        } else return "";
+        } else return "-1";
     };
 
     const selectCodeSimilarity = (text) => {
@@ -277,7 +350,7 @@ export const ExportInvoice = (props) => {
                 });
             }
         } catch (error) {
-            console.log(error);
+            console.log("error");
             return result;
         }
         return result;
@@ -291,6 +364,8 @@ export const ExportInvoice = (props) => {
             } else {
                 return <span className="text-muted">{result}</span>;
             }
+        } else if (text === "-1") {
+            return <span className="text-danger">{code}</span>;
         } else {
             return <span className="text-primary">{text}</span>;
         }
@@ -451,11 +526,28 @@ export const ExportInvoice = (props) => {
         {
             title: "Mã vật tư",
             dataIndex: "mavattu",
-            width: 100,
+            width: 200,
             key: "mavattu",
             editable: true,
+            ...getColumnSearchProps("mavattu"),
             sorter: (a, b) => a.mavattu.length - b.mavattu.length,
             sortDirections: ["descend", "ascend"],
+            render: (text) => {
+                return {
+                    props: {
+                        style: { background: "#fff3e0" },
+                    },
+                    children: <>{text}</>,
+                };
+            },
+            // onCell: (text, record) => {
+            //     return {
+            //         props: {
+            //             style: { background: "#fff3e0" },
+            //         },
+            //         children: <>{text}</>,
+            //     };
+            // },
         },
         {
             title: "Tên vật tư",
@@ -552,7 +644,7 @@ export const ExportInvoice = (props) => {
             title: "Nhóm hàng",
             dataIndex: "nhomhang",
             width: 200,
-            editable: true,
+            // editable: true,
             key: "nhomhang",
         },
         {
@@ -649,7 +741,7 @@ export const ExportInvoice = (props) => {
             setLoading(true);
             ExcelRenderer(fileObj, (err, resp) => {
                 if (err) {
-                    console.log(err);
+                    console.log("error");
                     setLoading(false);
                 } else {
                     const rows = [];
